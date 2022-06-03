@@ -16,6 +16,7 @@ import { getConfig } from './lib/config'
 import ValidationError from '../lib/interfaces/errors'
 import { PlainClientAPI } from 'contentful-management'
 import trim from 'lodash/trim'
+import { RunMigrationConfig } from '../types'
 
 class ManyError extends Error {
   public errors: (Error | ValidationError)[]
@@ -72,10 +73,12 @@ const getMigrationFunctionFromFile = (filePath, terminate) => {
 }
 
 const createRun = ({ shouldThrow }) =>
-  async function run(argv) {
+  async function run(argv: RunMigrationConfig) {
     const terminate = makeTerminatingFunction({ shouldThrow })
     const migrationFunction =
-      argv.migrationFunction || getMigrationFunctionFromFile(argv.filePath, terminate)
+      'migrationFunction' in argv
+        ? argv.migrationFunction
+        : getMigrationFunctionFromFile(argv.filePath, terminate)
     const application = argv.managementApplication || `contentful.migration-cli/${version}`
     const feature = argv.managementFeature || `migration-library`
 
@@ -122,9 +125,10 @@ const createRun = ({ shouldThrow }) =>
       terminate(new ManyError('Payload Validation Errors', parseResult.payloadValidationErrors))
     }
 
-    const migrationName = argv.migrationFunction
-      ? argv.migrationFunction.name
-      : path.basename(argv.filePath, '.js')
+    const migrationName =
+      'migrationFunction' in argv
+        ? argv.migrationFunction.name
+        : path.basename(argv.filePath, '.js')
     const errorsFile = path.join(process.cwd(), `errors-${migrationName}-${Date.now()}.log`)
 
     const batches = parseResult.batches

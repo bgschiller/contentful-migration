@@ -5,6 +5,7 @@
   "author": "Contentful GmbH",
   "license": "MIT",
   "main": "built/index",
+  "types": "built/index.d.ts",
   "keywords": [
     "contentful",
     "content model",

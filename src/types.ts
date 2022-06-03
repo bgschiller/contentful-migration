@@ -1,4 +1,4 @@
-import * as axios from 'axios'
+import type * as axios from 'axios'
 
 export type RunMigrationConfig = {
   accessToken?: string
@@ -8,9 +8,10 @@ export type RunMigrationConfig = {
   rawProxy?: boolean
   yes?: boolean
   retryLimit?: number
+  managementApplication?: string
+  managementFeature?: string
+  quiet?: boolean
 } & ({ filePath: string } | { migrationFunction: MigrationFunction })
-
-export function runMigration(config: RunMigrationConfig): Promise<any>
 
 export interface Movement {
   toTheTop(): void
@@ -187,6 +188,7 @@ export interface IFieldGroupWidgetSettings {
   [setting: string]: WidgetSettingsValue
 }
 
+// TODO: should we just import the one from contentful-management?
 export interface ContentType {
   id: string
   instanceId: string
